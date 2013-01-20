@@ -50,6 +50,7 @@ The source of this plugin can be "cloned" from the GitHub-repo using:
 ==Installation
 
 - Download the plugin from the available source http://github.com/chantra/redmine_gitrevision_download/downloads
+- Run bundle install in the redmine root directory
 - Install the plugin as described at: http://www.redmine.org/wiki/redmine/Plugins
   in a nutshell run:
   <tt>rake db:migrate_plugins RAILS_ENV=production</tt>
