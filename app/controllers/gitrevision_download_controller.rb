@@ -1,7 +1,7 @@
 class GitrevisionDownloadController < ApplicationController
   unloadable
 
-  before_filter :find_project, :authorize, :only => [:index]
+  before_filter :find_project, :find_repository, :authorize, :only => [:index]
   #skip_before_filter :verify_authenticity_token, :check_if_login_required
 
   def index
@@ -14,16 +14,15 @@ class GitrevisionDownloadController < ApplicationController
       render_404
       return
     end
-
-    repository = @project.repository
-    if repository.nil?
-      flash.now[:error] = l(:project_no_repository, :name => @project.to_s)
+    
+    if @repository.project != @project
       render_404
       return
     end
+
 =begin
 # This will be handled by Grit itself
-    if repository.type != "Git"
+    if @repository.type != "Git"
       flash.now[:error] = l(:repo_not_git, :name => @project.to_s)
       render_404
       return
@@ -35,9 +34,9 @@ class GitrevisionDownloadController < ApplicationController
     else
       rev = params[:rev]
     end
-    # init repository
+    # init @repository
     begin
-      repo = Grit::Repo.new(repository.url, :is_bare => true)
+      repo = Grit::Repo.new(@repository.url, :is_bare => true)
     rescue Grit::NoSuchPathError => e
       flash.now[:error] = l(:repo_path_not_found)
       render_404
@@ -105,7 +104,7 @@ class GitrevisionDownloadController < ApplicationController
         content = ActiveSupport::Gzip.compress(content)
     end
 
-    send_data(content, :filename => "#{project_name}-#{rev}.tar" + (is_gzipped ? ".gz" : ""), :type => is_gzipped ? 'application/x-gzip' : 'application/x-tar')
+    send_data(content, :filename => "#{project_name}" + (@repository.identifier.empty? ? "" : "-#{@repository.identifier}") + "-#{rev}.tar" + (is_gzipped ? ".gz" : ""), :type => is_gzipped ? 'application/x-gzip' : 'application/x-tar')
   end
 
   private
@@ -121,6 +120,21 @@ class GitrevisionDownloadController < ApplicationController
       flash.now[:error] = l(:unknown_exception)
       render_404
       @project = nil
+    end
+  end
+  
+  def find_repository
+    begin
+    unless @project.nil?
+      @repository = Repository.find(params[:repository_id])
+    end
+    rescue ActiveRecord::RecordNotFound
+      flash.now[:error] = l(:repo_path_not_found)
+      render_404
+    rescue Excepion => e
+      flash.now[:error] = l(:unknown_exception)
+      render_404
+      @repository = nil
     end
   end
 
