@@ -10,7 +10,7 @@ class GitrevisionDownloadController < ApplicationController
     commit = nil
     return unless @project
     # we check that the module is enabled
-    if not @project.module_enabled?('gitrevision_download')
+    if not @project.module_enabled?('repository')
       render_404
       return
     end

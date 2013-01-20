@@ -12,7 +12,7 @@ Redmine::Plugin.register :redmine_gitrevision_download do
   settings :default => { :gzip => 1 }, :partial => 'settings/gitrevision_download_settings'
   # This plugin adds a project module
   # It can be enabled/disabled at project level (Project settings -> Modules)
-  project_module :gitrevision_download do
+  project_module :repository do
     permission :view_gitrevision_download, :gitrevision_download => :index
   end
 end
