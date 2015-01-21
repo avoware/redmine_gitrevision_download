@@ -126,7 +126,7 @@ class GitrevisionDownloadController < ApplicationController
   def find_repository
     begin
     unless @project.nil?
-      @repository = Repository.find(params[:repository_id])
+      @repository = Repository.find_by_identifier_param(params[:repository_id])
     end
     rescue ActiveRecord::RecordNotFound
       flash.now[:error] = l(:repo_path_not_found)

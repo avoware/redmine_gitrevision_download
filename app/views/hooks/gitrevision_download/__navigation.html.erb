@@ -1,7 +1,7 @@
 <% if User.current.allowed_to?({:controller => 'gitrevision_download', :action => 'index'}, @project, :global => false) %>
 <% if @project.module_enabled?('repository') and @repository.type == "Repository::Git" %>
  <%= link_to "#{l(:gitrevision_download_revdownload)} #{@rev}", 
-              {:controller => 'gitrevision_download', :project_id => @project.id, :repository_id => @repository.id, :rev => @rev},
+              {:controller => 'gitrevision_download', :project_id => @project.identifier, :repository_id => @repository.identifier, :rev => @rev},
               { :class => "icon icon-save", :rel => 'nofollow', :title => "#{l(:gitrevision_download_revdownload)} #{@rev}" } %>
 <% end %>
 <% end %>
